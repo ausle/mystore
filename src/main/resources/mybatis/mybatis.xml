@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    
+
+    <settings>
+        <!--开启延迟加载-->
+        <!--设置懒加载为true-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!--该属性为true表示，所有懒加载属性初始化时就全部加载。所以这里设置为false-->
+        <setting name="aggressiveLazyLoading" value="false"/>
+
+        <!--mybatis二级缓存开启-->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+
+
+
+</configuration>
