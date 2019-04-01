@@ -64,6 +64,18 @@
         <property name="configLocation" value="classpath:mybatis/mybatis.xml"></property>
         <property name="dataSource" ref="dataSource"/>
         <property name="mapperLocations" value="classpath:mappers/*.xml"/>
+
+      <!--  <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value></value>
+                    </property>
+                </bean>
+            </array>
+        </property>-->
+
+
     </bean>
 
 

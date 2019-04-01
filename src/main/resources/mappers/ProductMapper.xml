@@ -57,8 +57,8 @@
       )
     values (#{id,jdbcType=INTEGER}, #{categoryId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
       #{subtitle,jdbcType=VARCHAR}, #{mainImage,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, 
-      #{stock,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{subImages,jdbcType=LONGVARCHAR}, #{detail,jdbcType=LONGVARCHAR}
+      #{stock,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, now(),
+      now(), #{subImages,jdbcType=LONGVARCHAR}, #{detail,jdbcType=LONGVARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.asule.entity.Product" >
@@ -88,12 +88,8 @@
       <if test="status != null" >
         status,
       </if>
-      <if test="createTime != null" >
         create_time,
-      </if>
-      <if test="updateTime != null" >
         update_time,
-      </if>
       <if test="subImages != null" >
         sub_images,
       </if>
@@ -126,12 +122,8 @@
       <if test="status != null" >
         #{status,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+      now(),
+      now(),
       <if test="subImages != null" >
         #{subImages,jdbcType=LONGVARCHAR},
       </if>
@@ -167,9 +159,7 @@
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+        update_time = now(),
       <if test="subImages != null" >
         sub_images = #{subImages,jdbcType=LONGVARCHAR},
       </if>
@@ -207,4 +197,47 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectList" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    from mmall_product ORDER BY id ASC
+  </select>
+
+  <select id="selectByNameAndProductId" resultMap="BaseResultMap" parameterType="map">
+    select
+    <include refid="Base_Column_List" />
+    from mmall_product
+    <where>
+      <if test="productName!=null ">
+        AND name LIKE #{productName}
+      </if>
+      <if test="productId!=null ">
+        AND  id=#{productId}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByNameAndCategoryIds" parameterType="map" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM mmall_product
+    <where>
+      <if test="keyword!=null ">
+        AND name=#{keyword}
+      </if>
+      <if test="ids!=null ">
+        AND category_id IN
+        <foreach collection="ids" item="id" open="(" close=")" index="index" separator=",">
+           #{id}
+        </foreach>
+      </if>
+
+    </where>
+
+
+
+
+  </select>
+
+
 </mapper>

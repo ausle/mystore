@@ -16,6 +16,13 @@
     </settings>
 
 
+    <!--mybatis-pagehelper的插件配置-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+        </plugin>
+    </plugins>
+    
+    
 
 
 </configuration>

@@ -43,6 +43,19 @@ public class Product {
         this.detail = detail;
     }
 
+    public Product(Integer id, Integer categoryId, String name, String subtitle, String mainImage, BigDecimal price, Integer stock, Integer status, Date createTime, Date updateTime) {
+        this.id = id;
+        this.categoryId = categoryId;
+        this.name = name;
+        this.subtitle = subtitle;
+        this.mainImage = mainImage;
+        this.price = price;
+        this.stock = stock;
+        this.status = status;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+    }
+
     public Product() {
         super();
     }
