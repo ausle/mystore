@@ -49,9 +49,9 @@ public class OrderController {
 
 
 
-    @RequestMapping("alipay_callbak.do")
+    @RequestMapping("alipay_callback.do")
     @ResponseBody
-    public ServerResponse alipayCallback(HttpServletRequest request){
+    public Object alipayCallback(HttpServletRequest request){
 
         //支付宝回调时，各种信息都在request中。从request中取出相关信息
         Map<String, String> params =new HashMap<>();
@@ -85,8 +85,10 @@ public class OrderController {
              *  所以在调用该方法前，需要除去sign_type。
              *
              *  我们使用的签名类型是rsa2，所以使用SHA256WithRSA的signture来处理处理验签。
+             *
+             *  第二个参数是支付宝公钥
              */
-            boolean rsaCheckV2 = AlipaySignature.rsaCheckV2(params, Configs.getPublicKey(), "utf-8", Configs.getSignType());
+            boolean rsaCheckV2 = AlipaySignature.rsaCheckV2(params, Configs.getAlipayPublicKey(), "utf-8", Configs.getSignType());
 
             if (!rsaCheckV2){
                 return ServerResponse.createByErrorMessage("非法请求,验证不通过");
@@ -95,15 +97,14 @@ public class OrderController {
             logger.info("支付宝验证回调异常");
         }
 
-        //验证各种数据
+        //TODO:验证各种数据
 
 
-
-        //
-
-        return null;
-
-
+        ServerResponse serverResponse = orderService.aliCallback(params);
+        if(serverResponse.isSuccess()){
+            return Constant.AlipayCallback.RESPONSE_SUCCESS;
+        }
+        return Constant.AlipayCallback.RESPONSE_FAILED;
     }
 
 

@@ -14,10 +14,10 @@
                 </commentGenerator>
 
                 <jdbcConnection
-                        driverClass="${jdbc.driver}"
-                        connectionURL="${jdbc.url}"
-                        userId="${jdbc.username}"
-                        password="${jdbc.password}">
+                        driverClass="${db.driverClassName}"
+                        connectionURL="${db.url}"
+                        userId="${db.username}"
+                        password="${db.password}">
                 </jdbcConnection>
 
                 <!--指定JDBC类型和Java类型如何转换-->
@@ -49,7 +49,7 @@
                 </javaClientGenerator>
 
                 <!--设置表-->
-                <table
+                <!--<table
                        tableName="mmall_cart"
                        domainObjectName="Cart"
                        enableCountByExample="false"
@@ -114,6 +114,15 @@
                         enableDeleteByExample="false"
                         enableSelectByExample="false"
                         selectByExampleQueryId="false">
-                </table>
+                </table>-->
+
+                <table tableName="mmall_pay_info"
+                       domainObjectName="PayInfo"
+                       enableCountByExample="false"
+                       enableUpdateByExample="false"
+                       enableDeleteByExample="false"
+                       enableSelectByExample="false"
+                       selectByExampleQueryId="false"
+                />
         </context>
 </generatorConfiguration>

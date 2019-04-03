@@ -68,11 +68,18 @@ public class OrderService implements IOrderService{
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private PayInfoMapper payInfoMapper;
+
 
     @Override
     public ServerResponse createOrder(Integer userId, Integer shippingId) {
         //查询购物车中被选中的购物信息
         List<Cart> cartList = cartMapper.selectCheckedCartByUserId(userId);
+
+
+        
+
 
         ServerResponse serverResponse = this.getCartOrderItem(userId,cartList);
         if(!serverResponse.isSuccess()){
@@ -350,8 +357,6 @@ public class OrderService implements IOrderService{
     public ServerResponse pay(Long orderNo, Integer userId, String path) {
         HashMap<String, String> results = new HashMap<>();
 
-
-
         //查询某个用户的订单信息
         Order order= orderMapper.selectOrderByOrderNoAndUserId(userId, orderNo);
 
@@ -424,9 +429,6 @@ public class OrderService implements IOrderService{
             goodsDetailList.add(goods);
         }
 
-
-
-
 //        String appAuthToken = "应用授权令牌";//根据真实值填写
 
         // 创建条码支付请求builder，设置请求参数
@@ -435,16 +437,14 @@ public class OrderService implements IOrderService{
                 .setUndiscountableAmount(undiscountableAmount).setSellerId(sellerId).setBody(body)
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
-                //                .setNotifyUrl("https://openapi.alipaydev.com/gateway.do")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
+                .setNotifyUrl(PropertiesUtil.getProperty("alipay.callback.url"))//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
                 .setGoodsDetailList(goodsDetailList);
-
 
         Configs.init("zfbinfo.properties");
         /** 使用Configs提供的默认参数
          *  AlipayTradeService可以使用单例或者为静态成员对象，不需要反复new
          */
         tradeService = new AlipayTradeServiceImpl.ClientBuilder().build();
-
 
         // 调用tradePay方法获取当面付应答
         AlipayF2FPrecreateResult result = tradeService.tradePrecreate(builder);
@@ -516,9 +516,8 @@ public class OrderService implements IOrderService{
 
         Order order = orderMapper.selectByOrderNo(orderNo);
         if(order == null){
-            return ServerResponse.createByErrorMessage("非快乐慕商城的订单,回调忽略");
+            return ServerResponse.createByErrorMessage("非菜鲜果美的订单,回调忽略");
         }
-
 
         if(order.getStatus() >= Constant.OrderStatusEnum.PAID.getCode()){
             return ServerResponse.createBySuccess("支付宝重复调用");
@@ -531,8 +530,16 @@ public class OrderService implements IOrderService{
             orderMapper.updateByPrimaryKeySelective(order);
         }
 
+        PayInfo payInfo = new PayInfo();
+        payInfo.setUserId(order.getUserId());
+        payInfo.setOrderNo(order.getOrderNo());
+        payInfo.setPayPlatform(Constant.PayPlatformEnum.ALIPAY.getCode());
+        payInfo.setPlatformNumber(tradeNo);
+        payInfo.setPlatformStatus(tradeStatus);
 
-        return null;
+        payInfoMapper.insert(payInfo);
+        return ServerResponse.createBySuccess();
+
     }
 
     // 简单打印应答
