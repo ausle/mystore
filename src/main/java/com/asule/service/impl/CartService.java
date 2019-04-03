@@ -12,9 +12,11 @@ import com.asule.util.BigDecimalUtil;
 import com.asule.util.PropertiesUtil;
 import com.asule.vo.CartProductVo;
 import com.asule.vo.CartVo;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +91,33 @@ public class CartService implements ICartService{
         return ServerResponse.createBySuccess(cartVo);
     }
 
+    @Override
+    public ServerResponse<CartVo> deleteProduct(Integer userId, String productIds) {
+        if (StringUtils.isBlank(productIds)){
+            return ServerResponse.createByErrorMessage("未传入商品id");
+        }
+        List<String> productList = Splitter.on(",").splitToList(productIds);
+        if(CollectionUtils.isEmpty(productList)){
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(),ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+        cartMapper.deleteByUserIdProductIds(userId,productList);
+        return this.list(userId);
+    }
+
+    @Override
+    public ServerResponse<CartVo> selectOrUnSelect(Integer userId, Integer productId, Integer checked) {
+        cartMapper.checkedOrUncheckedProduct(userId,productId,checked);
+        return this.list(userId);
+    }
+
+    @Override
+    public ServerResponse<Integer> getCartProductCount(Integer userId) {
+        if(userId == null){
+            return ServerResponse.createBySuccess(0);
+        }
+        return ServerResponse.createBySuccess(cartMapper.selectCartProductCount(userId));
+    }
+
     private CartVo getCartVoLimit(Integer userId){
 
         CartVo cartVo = new CartVo();
@@ -150,13 +179,15 @@ public class CartService implements ICartService{
         }
         cartVo.setCartTotalPrice(cartTotalPrice);
         cartVo.setCartProductVoList(cartProductVoList);
-        cartVo.setAllChecked(true);
+        cartVo.setAllChecked(isAllChecked(userId));
         cartVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
         return cartVo;
     }
 
 
-
+    public boolean isAllChecked(Integer userId){
+        return cartMapper.isJudgeAllChecked(userId)==0?true:false;
+    }
 }
 
 /*

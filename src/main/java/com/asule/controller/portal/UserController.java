@@ -40,6 +40,13 @@ public class UserController {
         return login;
     }
 
+    @RequestMapping(value = "logout.do",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse<String> logout(HttpSession session){
+        session.removeAttribute(Constant.CURRENT_USER);
+        return ServerResponse.createBySuccess();
+    }
+
 
     @RequestMapping(value = "get_user_info.do",method = RequestMethod.GET)
     @ResponseBody

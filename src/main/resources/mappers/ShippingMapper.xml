@@ -31,7 +31,16 @@
     delete from mmall_shipping
     where id = #{id,jdbcType=INTEGER}
   </delete>
+
+
+
   <insert id="insert" parameterType="com.asule.entity.Shipping" >
+
+    <selectKey keyProperty="id" resultType="int" order="AFTER">
+        SELECT last_insert_id()
+    </selectKey>
+
+
     insert into mmall_shipping (id, user_id, receiver_name, 
       receiver_phone, receiver_mobile, receiver_province, 
       receiver_city, receiver_district, receiver_address, 
@@ -40,7 +49,7 @@
     values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{receiverName,jdbcType=VARCHAR}, 
       #{receiverPhone,jdbcType=VARCHAR}, #{receiverMobile,jdbcType=VARCHAR}, #{receiverProvince,jdbcType=VARCHAR}, 
       #{receiverCity,jdbcType=VARCHAR}, #{receiverDistrict,jdbcType=VARCHAR}, #{receiverAddress,jdbcType=VARCHAR}, 
-      #{receiverZip,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      #{receiverZip,jdbcType=VARCHAR}, now(),now()
       )
   </insert>
   <insert id="insertSelective" parameterType="com.asule.entity.Shipping" >
@@ -155,9 +164,7 @@
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
+        update_time = now(),
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -176,4 +183,26 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+
+  <delete id="deleteByShippingIdUserId" parameterType="map">
+    DELETE  FROM  mmall_shipping
+    where id = #{shippingId}
+    and user_id = #{userId}
+  </delete>
+
+  <select id="selectByShippingIdUserId" resultMap="BaseResultMap" parameterType="map">
+    SELECT
+    <include refid="Base_Column_List"/>
+    from mmall_shipping
+    where id = #{shippingId}
+    and user_id = #{userId}
+  </select>
+
+  <select id="selectByUserId" resultMap="BaseResultMap" parameterType="map">
+    SELECT
+    <include refid="Base_Column_List"/>
+    from mmall_shipping
+    where user_id = #{userId}
+  </select>
 </mapper>
