@@ -31,7 +31,7 @@ public class FTPUtil {
         FTPUtil ftpUtil = new FTPUtil(ftpIp,21,ftpUser,ftpPass);
         logger.info("开始连接ftp服务器");
         boolean result = ftpUtil.uploadFile("img",fileList);
-        logger.info("开始连接ftp服务器,结束上传,上传结果:{}");
+        logger.info("开始连接ftp服务器,结束上传,上传结果:{}"+result);
         return result;
     }
 
@@ -58,8 +58,8 @@ public class FTPUtil {
 
                     我使用被动模式，总是被阻塞。所以这里使用主动模式。
                 */
-                ftpClient.enterLocalActiveMode();
-//                ftpClient.enterLocalPassiveMode();
+//                ftpClient.enterLocalActiveMode();
+                ftpClient.enterLocalPassiveMode();
                 for(File fileItem : fileList){
                     fis = new FileInputStream(fileItem);
                     ftpClient.storeFile(fileItem.getName(),fis);
